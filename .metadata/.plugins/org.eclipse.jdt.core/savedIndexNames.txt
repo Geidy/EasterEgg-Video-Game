@@ -1,0 +1,2 @@
+INDEX VERSION 1.131+C:\Users\heidu\Desktop\EasterEggs\EasterEggs\.metadata\.plugins\org.eclipse.jdt.core
+280091377.index
