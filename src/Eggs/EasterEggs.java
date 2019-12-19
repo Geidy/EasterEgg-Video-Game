@@ -25,8 +25,9 @@ public class EasterEggs extends JFrame{
  
 		setTitle("Easter Eggs");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(1024, 700); //frame size
+		setSize(1040, 700); //frame size
 		setVisible(true);   //frame visibility	
+		setResizable(false);
 	}//end constructor
 
 }

@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 import java.util.Random;
 
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -18,10 +19,12 @@ public class GamePanel extends JPanel {
 	Image gamebkg = new ImageIcon("Assets\\bkg-easter3.png").getImage();
 	Image basket = new ImageIcon("Images\\basket.png").getImage();
 	Image egg = new ImageIcon("Images\\mango_egg.png").getImage();
-	Image gameOverbkg = new ImageIcon("Assets\\bkg-easter1.jpg").getImage();
+	Image secondLevelbkg = new ImageIcon("Images\\won1.jpg").getImage();
+	Image gameOverbkg = new ImageIcon("Images\\gameOver.png").getImage();
 	Image tempbkg; // temporary background
-	Image enemyEgg1 = new ImageIcon("Assets\\ton_face.png").getImage();
-	Image enemyEgg2 = new ImageIcon("Assets\\wow_face.png").getImage();
+	Image temp2;
+	Image enemyEgg1 = new ImageIcon("Assets\\surprise_trans.png").getImage();
+	Image enemyEgg2 = new ImageIcon("Assets\\emb_trans.png").getImage();
 	Image enemyEgg3 = new ImageIcon("Assets\\surprise_face.png").getImage();
 	Image enemyEgg4 = new ImageIcon("Assets\\embar_face.png").getImage();
 	
@@ -35,21 +38,31 @@ public class GamePanel extends JPanel {
 	JLabel points;
 
 	int pointsCount = 0; // for counting points
-	int timeleft = 45; // to show remaining time
+	int timeleft = 55; // to show remaining time
 	int counter = 0; // to decrement time slowly
 
 	boolean gameOver = false; // to check if the game is over
+	boolean secondLevel = false;
+	
+	//private int [] enemyxpos = { 100, 150, 200, 250, 300, 350, 400, 450, 500};
+	//private int [] enemyypos = { 150, 200, 250, 300, 350, 400, 450, 500, 550};
+	
+    int xpos; 
+	int ypos;
 
 	GamePanel() {
 
 		setLayout(null);
 		setFocusable(true);
 		tempbkg = gamebkg;
-
+		temp2 = secondLevelbkg;
+		
 		x_basket = 450;
 		y_basket = 600;
 		x_egg = (int) rand.nextInt(1000);
 		y_egg = 0;
+		xpos = (int) rand.nextInt(1000);
+		ypos = 0;
 
 
 		time = new JLabel("Time: 30");
@@ -83,7 +96,7 @@ public class GamePanel extends JPanel {
 			x_egg = rand.nextInt(1000); // randomize next eggs x coord
 
 		} else
-			y_egg++; // otherwise fall the egg down
+			y_egg +=2; // otherwise fall the egg down
 
 //		if (pointsCount >= 10) {
 //			String[] images = new String[] { "embar_face.png", "ton_face.png", "wow_face.png", "Surprice_face.png" };
@@ -95,18 +108,27 @@ public class GamePanel extends JPanel {
 //			int randomImg = rand.nextInt((max - min) + 1) + min;
 //			JLabel MyImage = new JLabel(new ImageIcon("image" + randomImg + ".png"));
 		}
-
 	
+	void enemyEgg() {
+		if(xpos >= 550) {
+			ypos = 0;
+			xpos = rand.nextInt(1000);
+			
+		} else
+			ypos++;
+	}
 
 
 	void updateTime() {
 		counter++;
-		if (counter == 100) // we count to 60 and then dec timeleft by 1 for slowing speed
+		if (counter == 55) // we count to 55 and then dec timeleft by 1 for slowing speed
 		{
-			timeleft--; // dec time left after 60 counts
+			timeleft--; // dec time left after 55 counts
 			counter = 0; // reset counter
 		}
-		time.setText("Time:" + timeleft);
+		 else {
+			time.setText("Time:" + timeleft);
+		}
 	}// end updateTime
 
 	void detectCollision() {
@@ -117,46 +139,80 @@ public class GamePanel extends JPanel {
 			pointsCount += 5; // give 5 points on each catch
 			points.setText("Points:" + pointsCount); // set the count
 			y_egg = 0; // for next egg
-			x_egg = rand.nextInt(500); // again randomizing x axis of egg
+			x_egg = rand.nextInt(1000); // again randomizing x axis of egg
 
-			x_egg = rand.nextInt(500);
-			x_egg = rand.nextInt(500);
+			//x_egg = rand.nextInt(1000);
+			//x_egg = rand.nextInt(1000);
 
 		}
 	}// end collision detection
+	
+	//second level check
+	 void secondLevel() {
+		if(pointsCount >= 40 && timeleft <= 0) {
+			JLabel yourScore = new JLabel("Score:" + pointsCount);
+			temp2 = secondLevelbkg;
+			yourScore.setBounds(300, 300, 200, 100);
+			secondLevel = true;
+			gameOver = true;
+			yourScore.setForeground(Color.red);
+			add(yourScore);
+			
+		}
+	}
 
 	// Fix the Game Over condition
 	void checkGameOver() {
-		if (timeleft <= 0) {
+		if (timeleft <= 0 && pointsCount < 25) {
 			JLabel yourScore = new JLabel("Your SCORE :" + pointsCount);
 			tempbkg = gameOverbkg;
-			yourScore.setBounds(100, 100, 200, 100);
+			yourScore.setBounds(300, 300, 200, 100);
 			gameOver = true;
-			yourScore.setForeground(Color.WHITE);
+			secondLevel = false;
+			yourScore.setForeground(Color.red);
 			add(yourScore);
 		}
 	}// end gameOver
+	
 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.drawImage(tempbkg, 0, 0, null); // game background
-
+		
+		
 		checkGameOver();
 
 		if (gameOver == false) {
+			//secondLevel = true;
 			setFocusable(true);
 			grabFocus();
 			updateTime();
 
 			fallEgg();
+			enemyEgg();
 			detectCollision();
+			secondLevel();
 			
+			//drawing enemies
+			g2d.drawImage(enemyEgg1, xpos, ypos, null);
+			g2d.drawImage(enemyEgg2, xpos * 6, ypos * 8, null);
+			
+						
 			g2d.drawImage(egg, x_egg, y_egg, null);
 			g2d.drawImage(egg, x_egg, y_egg, null);
+			
+			g2d.drawImage(enemyEgg1, xpos , ypos * 8, null);
+			g2d.drawImage(enemyEgg2, xpos, ypos * 8, null);
 
 			g2d.drawImage(egg, x_egg, y_egg, null); // drawing egg at new position
 			g2d.drawImage(basket, x_basket, y_basket, null); // drawing basket
+		}
+		else {
+			secondLevel = true;
+			g2d.drawImage(temp2, 0, 0, null);
+			
+			secondLevel();					
 		}
 		repaint();
 	}// end paintComponent
