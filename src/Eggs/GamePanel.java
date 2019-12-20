@@ -115,7 +115,8 @@ public class GamePanel extends JPanel {
 			xpos = rand.nextInt(1000);
 			
 		} else
-			ypos++;
+			ypos +=2;
+		xpos ++;
 	}
 
 
@@ -134,24 +135,37 @@ public class GamePanel extends JPanel {
 	void detectCollision() {
 		Rectangle basketRect = new Rectangle(x_basket, y_basket, 100, 65); // making a rectangle on the basket
 		Rectangle eggRect = new Rectangle(x_egg, y_egg, 40, 60); // making a rectangle on egg
+		Rectangle enemyRect = new Rectangle(xpos, ypos, 60, 75);
 
 		if (eggRect.intersects(basketRect)) {
 			pointsCount += 5; // give 5 points on each catch
 			points.setText("Points:" + pointsCount); // set the count
 			y_egg = 0; // for next egg
 			x_egg = rand.nextInt(1000); // again randomizing x axis of egg
+			
+		}else if(enemyRect.intersects(basketRect)) {
+				pointsCount -=5;
+				points.setText("Points:" + pointsCount); 
+				ypos = 0;
+				xpos = rand.nextInt(1000);
+				
+				//xpos = rand.nextInt(1000);
+				xpos = rand.nextInt(800);
+				
+			}
+		
 
 			//x_egg = rand.nextInt(1000);
 			//x_egg = rand.nextInt(1000);
 
 		}
-	}// end collision detection
+	// end collision detection
 	
 	//second level check
 	 void secondLevel() {
-		if(pointsCount >= 40 && timeleft <= 0) {
+		if(pointsCount >= 30 && timeleft != 0) {
 			JLabel yourScore = new JLabel("Score:" + pointsCount);
-			temp2 = secondLevelbkg;
+			tempbkg = secondLevelbkg;
 			yourScore.setBounds(300, 300, 200, 100);
 			secondLevel = true;
 			gameOver = true;
@@ -163,12 +177,13 @@ public class GamePanel extends JPanel {
 
 	// Fix the Game Over condition
 	void checkGameOver() {
-		if (timeleft <= 0 && pointsCount < 25) {
+		if (timeleft <= 0 && pointsCount <= 25) {
 			JLabel yourScore = new JLabel("Your SCORE :" + pointsCount);
 			tempbkg = gameOverbkg;
 			yourScore.setBounds(300, 300, 200, 100);
-			gameOver = true;
 			secondLevel = false;
+			gameOver = true;
+			
 			yourScore.setForeground(Color.red);
 			add(yourScore);
 		}
@@ -184,7 +199,7 @@ public class GamePanel extends JPanel {
 		checkGameOver();
 
 		if (gameOver == false) {
-			//secondLevel = true;
+			secondLevel = true;
 			setFocusable(true);
 			grabFocus();
 			updateTime();
@@ -196,24 +211,24 @@ public class GamePanel extends JPanel {
 			
 			//drawing enemies
 			g2d.drawImage(enemyEgg1, xpos, ypos, null);
-			g2d.drawImage(enemyEgg2, xpos * 6, ypos * 8, null);
-			
+			//g2d.drawImage(enemyEgg2, xpos * 2 , ypos * 2 , null);
+			g2d.drawImage(enemyEgg1, xpos, ypos, null);
 						
 			g2d.drawImage(egg, x_egg, y_egg, null);
 			g2d.drawImage(egg, x_egg, y_egg, null);
 			
-			g2d.drawImage(enemyEgg1, xpos , ypos * 8, null);
-			g2d.drawImage(enemyEgg2, xpos, ypos * 8, null);
+			g2d.drawImage(enemyEgg1, xpos , ypos , null);
+			//g2d.drawImage(enemyEgg2, xpos * 2, ypos * 2 , null);
 
 			g2d.drawImage(egg, x_egg, y_egg, null); // drawing egg at new position
 			g2d.drawImage(basket, x_basket, y_basket, null); // drawing basket
 		}
-		else {
-			secondLevel = true;
-			g2d.drawImage(temp2, 0, 0, null);
-			
-			secondLevel();					
-		}
+//		else {
+//			secondLevel = true;
+//			g2d.drawImage(temp2, 0, 0, null);
+//			
+//			secondLevel();					
+//		}
 		repaint();
 	}// end paintComponent
 
